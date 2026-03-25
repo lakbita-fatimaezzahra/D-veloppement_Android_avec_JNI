@@ -1,16 +1,15 @@
 package com.example.jnidemo;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    public native String helloFromJNI();
-    public native int factorial(int n);
-    public native String reverseString(String s);
-    public native int sumArray(int[] values);
+    public native String getNativeMessage();
+    public native int computeFactorial(int value);
+    public native String flipText(String input);
+    public native int calculateSum(int[] numbers);
 
     static {
         System.loadLibrary("native-lib");
@@ -21,25 +20,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView tvHello = findViewById(R.id.tvHello);
-        TextView tvFact = findViewById(R.id.tvFact);
-        TextView tvReverse = findViewById(R.id.tvReverse);
-        TextView tvArray = findViewById(R.id.tvArray);
+        TextView tvMsg = findViewById(R.id.tvMsg);
+        TextView tvCalc = findViewById(R.id.tvCalc);
+        TextView tvText = findViewById(R.id.tvText);
+        TextView tvSum = findViewById(R.id.tvSum);
 
-        tvHello.setText(helloFromJNI());
+        tvMsg.setText(getNativeMessage());
 
-        int fact10 = factorial(10);
-        if (fact10 >= 0) {
-            tvFact.setText("Factoriel de  10= " + fact10);
+        int res = computeFactorial(8);
+        if (res >= 0) {
+            tvCalc.setText("Factoriel de 8 = " + res);
         } else {
-            tvFact.setText("Erreur factoriel, code = " + fact10);
+            tvCalc.setText("Erreur calcul (code " + res + ")");
         }
 
-        String reversed = reverseString("JNI is powerful!");
-        tvReverse.setText("Texte inverse : " + reversed);
+        String output = flipText("JNI avec C++");
+        tvText.setText("Resultat : " + output);
 
-        int[] numbers = {10, 20, 30, 40, 50};
-        int sum = sumArray(numbers);
-        tvArray.setText("Somme du tableau = " + sum);
+        int[] data = {5, 15, 25, 35};
+        int total = calculateSum(data);
+        tvSum.setText("Total = " + total);
     }
 }

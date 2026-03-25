@@ -7,39 +7,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="18dp">
 
         <TextView
-            android:id="@+id/tvHello"
+            android:id="@+id/tvMsg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hello JNI"
-            android:textSize="20sp"
-            android:paddingBottom="12dp" />
+            android:text="Message natif"
+            android:textSize="19sp"
+            android:paddingBottom="10dp" />
 
         <TextView
-            android:id="@+id/tvFact"
+            android:id="@+id/tvCalc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Factoriel"
-            android:textSize="20sp"
-            android:paddingBottom="12dp" />
+            android:text="Calcul factoriel"
+            android:textSize="19sp"
+            android:paddingBottom="10dp" />
 
         <TextView
-            android:id="@+id/tvReverse"
+            android:id="@+id/tvText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Reverse String"
-            android:textSize="20sp"
-            android:paddingBottom="12dp" />
+            android:text="Transformation texte"
+            android:textSize="19sp"
+            android:paddingBottom="10dp" />
 
         <TextView
-            android:id="@+id/tvArray"
+            android:id="@+id/tvSum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Somme tableau"
-            android:textSize="20sp"
-            android:paddingBottom="12dp" />
+            android:text="Addition tableau"
+            android:textSize="19sp"
+            android:paddingBottom="10dp" />
 
     </LinearLayout>
 </ScrollView>

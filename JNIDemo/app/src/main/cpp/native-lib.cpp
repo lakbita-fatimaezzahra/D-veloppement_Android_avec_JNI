@@ -4,108 +4,109 @@
 #include <climits>
 #include <android/log.h>
 
-#define LOG_TAG "JNI_DEMO"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define TAG_LOG "NDK_SAMPLE"
+#define LOG_INFO(...) __android_log_print(ANDROID_LOG_INFO, TAG_LOG, __VA_ARGS__)
+#define LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR, TAG_LOG, __VA_ARGS__)
 
-// 1) Hello World natif
+// 1) Message natif simple
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_example_jnidemo_MainActivity_helloFromJNI(
+Java_com_example_jnidemo_MainActivity_getNativeMessage(
         JNIEnv* env,
-        jobject /* this */) {
+        jobject /* instance */) {
 
-    LOGI("Appel de helloFromJNI depuis le natif");
-    return env->NewStringUTF("Hello from C++ via JNI !");
+    LOG_INFO("Execution de getNativeMessage");
+    return env->NewStringUTF("Message depuis le code natif C++ !");
 }
 
-// 2) Factoriel avec gestion d'erreur
+// 2) Calcul de produit factoriel
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_jnidemo_MainActivity_factorial(
+Java_com_example_jnidemo_MainActivity_computeFactorial(
         JNIEnv* env,
-        jobject /* this */,
-        jint n) {
+        jobject /* instance */,
+        jint value) {
 
-    if (n < 0) {
-        LOGE("Erreur : n negatif");
-        return -1;
+    if (value < 0) {
+        LOG_ERROR("Valeur negative interdite");
+        return -10;
     }
 
-    long long fact = 1;
-    for (int i = 1; i <= n; i++) {
-        fact *= i;
-        if (fact > INT_MAX) {
-            LOGE("Overflow detecte pour n=%d", n);
-            return -2;
+    long long result = 1;
+    for (int i = 2; i <= value; i++) {
+        result *= i;
+
+        if (result > INT_MAX) {
+            LOG_ERROR("Depassement detecte pour value=%d", value);
+            return -20;
         }
     }
 
-    LOGI("Factoriel de %d calcule en natif = %lld", n, fact);
-    return static_cast<jint>(fact);
+    LOG_INFO("Resultat factoriel (%d) = %lld", value, result);
+    return static_cast<jint>(result);
 }
 
-// 3) Inversion d'une chaine Java -> C++ -> Java
+// 3) Renverser une chaine
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_example_jnidemo_MainActivity_reverseString(
+Java_com_example_jnidemo_MainActivity_flipText(
         JNIEnv* env,
-        jobject /* this */,
-        jstring javaString) {
+        jobject /* instance */,
+        jstring inputStr) {
 
-    if (javaString == nullptr) {
-        LOGE("Chaine nulle recue");
-        return env->NewStringUTF("Erreur : chaine nulle");
+    if (inputStr == nullptr) {
+        LOG_ERROR("Entree vide");
+        return env->NewStringUTF("Erreur : texte vide");
     }
 
-    const char* chars = env->GetStringUTFChars(javaString, nullptr);
-    if (chars == nullptr) {
-        LOGE("Impossible de lire la chaine Java");
-        return env->NewStringUTF("Erreur JNI");
+    const char* rawChars = env->GetStringUTFChars(inputStr, nullptr);
+    if (rawChars == nullptr) {
+        LOG_ERROR("Lecture impossible");
+        return env->NewStringUTF("Erreur interne JNI");
     }
 
-    std::string s(chars);
-    env->ReleaseStringUTFChars(javaString, chars);
+    std::string text(rawChars);
+    env->ReleaseStringUTFChars(inputStr, rawChars);
 
-    std::reverse(s.begin(), s.end());
+    std::reverse(text.begin(), text.end());
 
-    LOGI("String inversee = %s", s.c_str());
-    return env->NewStringUTF(s.c_str());
+    LOG_INFO("Texte apres inversion : %s", text.c_str());
+    return env->NewStringUTF(text.c_str());
 }
 
-// 4) Somme d'un tableau int[]
+// 4) Addition des elements d'un tableau
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_jnidemo_MainActivity_sumArray(
+Java_com_example_jnidemo_MainActivity_calculateSum(
         JNIEnv* env,
-        jobject /* this */,
-        jintArray array) {
+        jobject /* instance */,
+        jintArray dataArray) {
 
-    if (array == nullptr) {
-        LOGE("Tableau nul");
-        return -1;
+    if (dataArray == nullptr) {
+        LOG_ERROR("Array null");
+        return -100;
     }
 
-    jsize len = env->GetArrayLength(array);
-    jint* elements = env->GetIntArrayElements(array, nullptr);
+    jsize size = env->GetArrayLength(dataArray);
+    jint* values = env->GetIntArrayElements(dataArray, nullptr);
 
-    if (elements == nullptr) {
-        LOGE("Impossible d'acceder aux elements du tableau");
-        return -2;
+    if (values == nullptr) {
+        LOG_ERROR("Acces aux donnees impossible");
+        return -200;
     }
 
-    long long sum = 0;
-    for (jsize i = 0; i < len; i++) {
-        sum += elements[i];
+    long long total = 0;
+    for (jsize i = 0; i < size; i++) {
+        total += values[i];
     }
 
-    env->ReleaseIntArrayElements(array, elements, 0);
+    env->ReleaseIntArrayElements(dataArray, values, 0);
 
-    if (sum > INT_MAX) {
-        LOGE("Overflow sur la somme");
-        return -3;
+    if (total > INT_MAX) {
+        LOG_ERROR("Overflow somme");
+        return -300;
     }
 
-    LOGI("Somme du tableau = %lld", sum);
-    return static_cast<jint>(sum);
+    LOG_INFO("Somme calculee = %lld", total);
+    return static_cast<jint>(total);
 }
